@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,102 +8,64 @@ datasource db {
 }
 
 model User {
-  id                         Int      @id @default(autoincrement())
-  name                       String   @unique
-  steam_id                   BigInt   @unique
-  remember_created_at        DateTime?
-  created_at                 DateTime @default(now())
-  updated_at                 DateTime @updatedAt
-  description                String   @default("")
-  remember_token             String?
-  avatar                     String?
-  email                      String?
-  confirmed_at               DateTime?
-  confirmation_token         String?  @unique
-  confirmation_sent_at       DateTime?
-  query_name_cache           String   @default("")
-  description_render_cache   String   @default("")
-  badge_name                 String   @default("")
-  badge_color                Int      @default(0)
-  notice                     String   @default("")
-  notice_render_cache        String   @default("")
-  avatar_token               String?
-  forums_posts_count         Int      @default(0)
-  public_forums_posts_count  Int      @default(0)
-
-  // Action/Permission relationships
-  action_edit_games                    ActionUserEditGame[]
-  action_edit_leagues                  ActionUserEditLeague[]
-  action_edit_leagues_general          ActionUserEditLeagues[]
-  action_edit_permissions              ActionUserEditPermission[]
-  action_edit_teams                    ActionUserEditTeam[]
-  action_edit_teams_general            ActionUserEditTeams[]
-  action_edit_users                    ActionUserEditUser[]
-  action_manage_forums                 ActionUserManageForum[]
-  action_manage_forums_threads         ActionUserManageForumsThread[]
-  action_manage_forums_topics          ActionUserManageForumsTopic[]
-  action_manage_rosters_leagues        ActionUserManageRostersLeague[]
-  action_manage_rosters_leagues_general ActionUserManageRostersLeagues[]
-
-  // Ban relationships
-  forums_bans                ActionUserUseForumsBan[]
-  forums_thread_bans         ActionUserUseForumsThreadBan[]
-  forums_topic_bans          ActionUserUseForumsTopicBan[]
-  leagues_bans               ActionUserUseLeaguesBan[]
-  teams_bans                 ActionUserUseTeamsBan[]
-  users_bans                 ActionUserUseUsersBan[]
-
-  // User relationships
-  team_players      TeamPlayer[]
-  roster_players    RosterPlayer[]
-  team_invites      TeamInvite[]
-  team_transfers    TeamTransfer[]
-  roster_transfers  RosterTransfer[]
-  comments          UserComment[]
-  notifications     Notification[]
-  titles            UserTitle[]
-  name_changes      UserNameChange[]
-  logs              UserLog[]
-  api_keys          APIKey[]
-  match_comms       MatchComm[]
-  match_comm_edits  MatchCommEdit[]
-  
-  // Forum relationships
-  forums_topics               ForumsTopic[]
-  forums_topics_isolated_by   ForumsTopic[] @relation("IsolatedBy")
-  forums_threads              ForumsThread[]
-  forums_posts                ForumsPost[]
-  forums_post_edits           ForumsPostEdit[]
-  forums_topic_subscriptions  ForumsTopicSubscription[]
-  forums_thread_subscriptions ForumsThreadSubscription[]
-
-  // Approval relationships
-  approved_name_changes UserNameChange[] @relation("ApprovedBy")
-  denied_name_changes   UserNameChange[] @relation("DeniedBy")
+  id                                                  Int                        @id @default(autoincrement())
+  steam_id                                            String?                    @unique
+  name                                                String
+  email                                               String?                    @unique
+  alias                                               String?
+  avatar                                              String?
+  description                                         String?
+  steam_profile                                       String?
+  enabled                                             Boolean                    @default(true)
+  admin                                               Boolean                    @default(false)
+  banned                                              Boolean                    @default(false)
+  created_at                                          DateTime                   @default(now())
+  updated_at                                          DateTime                   @updatedAt
+  ban_reason                                          String?
+  banned_until                                        DateTime?
+  UserBanHistory_UserBanHistory_banned_by_idTousers   UserBanHistory[]           @relation("UserBanHistory_banned_by_idTousers")
+  UserBanHistory_UserBanHistory_unbanned_by_idTousers UserBanHistory[]           @relation("UserBanHistory_unbanned_by_idTousers")
+  UserBanHistory_UserBanHistory_user_idTousers        UserBanHistory[]           @relation("UserBanHistory_user_idTousers")
+  api_keys                                            APIKey[]
+  forums_post_edits                                   ForumsPostEdit[]
+  forums_posts                                        ForumsPost[]
+  forums_thread_subscriptions                         ForumsThreadSubscription[]
+  forums_threads                                      ForumsThread[]
+  forums_topic_subscriptions                          ForumsTopicSubscription[]
+  forums_topics                                       ForumsTopic[]
+  match_comm_edits                                    MatchCommEdit[]
+  match_comms                                         MatchComm[]
+  roster_players                                      RosterPlayer[]
+  roster_transfers                                    RosterTransfer[]
+  notifications                                       Notification[]
+  team_invites                                        TeamInvite[]
+  team_players                                        TeamPlayer[]
+  team_transfers                                      TeamTransfer[]
+  user_admin_notes_user_admin_notes_admin_idTousers   user_admin_notes[]         @relation("user_admin_notes_admin_idTousers")
+  user_admin_notes_user_admin_notes_user_idTousers    user_admin_notes[]         @relation("user_admin_notes_user_idTousers")
+  comments                                            UserComment[]
+  logs                                                UserLog[]
+  approved_name_changes                               UserNameChange[]           @relation("ApprovedBy")
+  denied_name_changes                                 UserNameChange[]           @relation("DeniedBy")
+  name_changes                                        UserNameChange[]
+  titles                                              UserTitle[]
 
   @@map("users")
 }
 
 model Team {
-  id                       Int      @id @default(autoincrement())
-  name                     String   @unique
-  description              String   @default("")
-  created_at               DateTime @default(now())
-  updated_at               DateTime @updatedAt
-  avatar                   String?
-  players_count            Int      @default(0)
-  query_name_cache         String   @default("")
-  description_render_cache String   @default("")
-  notice                   String   @default("")
-  notice_render_cache      String   @default("")
-  avatar_token             String?
-
-  // Team relationships
-  players          TeamPlayer[]
-  invites          TeamInvite[]
-  transfers        TeamTransfer[]
-  rosters          Roster[]
-  action_edit_team ActionUserEditTeam[]
+  id          Int            @id @default(autoincrement())
+  name        String
+  tag         String?
+  avatar      String?
+  description String?
+  notice      String?
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  rosters     Roster[]
+  invites     TeamInvite[]
+  players     TeamPlayer[]
+  transfers   TeamTransfer[]
 
   @@map("teams")
 }
@@ -119,9 +75,8 @@ model TeamPlayer {
   user_id    Int
   team_id    Int
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
+  team       Team     @relation(fields: [team_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("team_players")
 }
@@ -133,9 +88,8 @@ model TeamInvite {
   created_at  DateTime  @default(now())
   accepted_at DateTime?
   declined_at DateTime?
-
-  user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
+  team        Team      @relation(fields: [team_id], references: [id])
+  user        User      @relation(fields: [user_id], references: [id])
 
   @@map("team_invites")
 }
@@ -145,17 +99,15 @@ model TeamTransfer {
   user_id    Int
   team_id    Int
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
+  team       Team     @relation(fields: [team_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("team_transfers")
 }
 
 model Game {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
   formats Format[]
   maps    Map[]
 
@@ -163,77 +115,71 @@ model Game {
 }
 
 model Format {
-  id              Int    @id @default(autoincrement())
-  game_id         Int?
-  name            String
-  description     String?
-  player_count    Int
+  id               Int      @id @default(autoincrement())
+  name             String
+  description      String?
+  player_count     Int
   max_player_count Int?
-
-  game    Game?    @relation(fields: [game_id], references: [id])
-  leagues League[]
+  game_id          Int?
+  game             Game?    @relation(fields: [game_id], references: [id])
+  leagues          League[]
 
   @@map("formats")
 }
 
 model League {
-  id                Int      @id @default(autoincrement())
-  format_id         Int
-  name              String
-  description       String
-  category          String?
-  status            Int      @default(0) // 0: hidden, 1: running, 2: completed
-  signuppable       Boolean  @default(true)
-  roster_locked     Boolean  @default(false)
-  matches_submittable Boolean @default(true)
-  transfers_require_approval Boolean @default(false)
-  allow_set_ready   Boolean  @default(true)
-  min_players       Int      @default(6)
-  max_players       Int      @default(18)
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
-
-  format    Format      @relation(fields: [format_id], references: [id])
-  divisions Division[]
-  rosters   Roster[]
-  action_edit_league         ActionUserEditLeague[]
-  action_manage_rosters      ActionUserManageRostersLeague[]
+  id                         Int        @id @default(autoincrement())
+  format_id                  Int
+  name                       String
+  description                String
+  category                   String?
+  status                     Int        @default(0)
+  signuppable                Boolean    @default(true)
+  roster_locked              Boolean    @default(false)
+  matches_submittable        Boolean    @default(true)
+  transfers_require_approval Boolean    @default(false)
+  allow_set_ready            Boolean    @default(true)
+  min_players                Int        @default(6)
+  max_players                Int        @default(18)
+  created_at                 DateTime   @default(now())
+  updated_at                 DateTime   @updatedAt
+  divisions                  Division[]
+  rosters                    Roster[]
+  format                     Format     @relation(fields: [format_id], references: [id])
 
   @@map("leagues")
 }
 
 model Division {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   league_id Int
   name      String
-
-  league  League   @relation(fields: [league_id], references: [id])
-  rosters Roster[]
-  matches Match[]
+  league    League   @relation(fields: [league_id], references: [id])
+  matches   Match[]
+  rosters   Roster[]
 
   @@map("league_divisions")
 }
 
 model Roster {
-  id          Int      @id @default(autoincrement())
-  league_id   Int
-  division_id Int?
-  team_id     Int
-  name        String
-  description String?
-  notice      String?
-  approved    Boolean  @default(false)
-  disbanded   Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-
-  league    League         @relation(fields: [league_id], references: [id])
-  division  Division?      @relation(fields: [division_id], references: [id])
-  team      Team           @relation(fields: [team_id], references: [id])
-  players   RosterPlayer[]
-  transfers RosterTransfer[]
-  home_matches Match[] @relation("HomeRoster")
-  away_matches Match[] @relation("AwayRoster")
+  id           Int              @id @default(autoincrement())
+  league_id    Int
+  division_id  Int?
+  team_id      Int
+  name         String
+  description  String?
+  notice       String?
+  approved     Boolean          @default(false)
+  disbanded    Boolean          @default(false)
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+  away_matches Match[]          @relation("AwayRoster")
+  home_matches Match[]          @relation("HomeRoster")
+  players      RosterPlayer[]
+  transfers    RosterTransfer[]
+  division     Division?        @relation(fields: [division_id], references: [id])
+  league       League           @relation(fields: [league_id], references: [id])
+  team         Team             @relation(fields: [team_id], references: [id])
 
   @@map("league_rosters")
 }
@@ -243,9 +189,8 @@ model RosterPlayer {
   roster_id  Int
   user_id    Int
   created_at DateTime @default(now())
-
-  roster Roster @relation(fields: [roster_id], references: [id])
-  user   User   @relation(fields: [user_id], references: [id])
+  roster     Roster   @relation(fields: [roster_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("league_roster_players")
 }
@@ -255,62 +200,57 @@ model RosterTransfer {
   roster_id  Int
   user_id    Int
   created_at DateTime @default(now())
-
-  roster Roster @relation(fields: [roster_id], references: [id])
-  user   User   @relation(fields: [user_id], references: [id])
+  roster     Roster   @relation(fields: [roster_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("league_roster_transfers")
 }
 
 model Match {
-  id             Int       @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   division_id    Int
   home_roster_id Int
   away_roster_id Int
   round          Int?
-  status         Int       @default(0) // 0: pending, 1: live, 2: completed
-  home_score     Int?
+  status         Int            @default(0)
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
   away_score     Int?
+  home_score     Int?
   scheduled_at   DateTime?
-  forfeit_by     String?   // 'home', 'away', or null
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  division    Division @relation(fields: [division_id], references: [id])
-  home_roster Roster   @relation("HomeRoster", fields: [home_roster_id], references: [id])
-  away_roster Roster   @relation("AwayRoster", fields: [away_roster_id], references: [id])
-  
-  comms     MatchComm[]
-  pick_bans MatchPickBan[]
+  forfeit_by     String?
+  comms          MatchComm[]
+  pick_bans      MatchPickBan[]
+  away_roster    Roster         @relation("AwayRoster", fields: [away_roster_id], references: [id])
+  division       Division       @relation(fields: [division_id], references: [id])
+  home_roster    Roster         @relation("HomeRoster", fields: [home_roster_id], references: [id])
 
   @@map("league_matches")
 }
 
 model MatchComm {
-  id         Int      @id @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   match_id   Int
   user_id    Int
   content    String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
   deleted_at DateTime?
-
-  match Match @relation(fields: [match_id], references: [id])
-  user  User  @relation(fields: [user_id], references: [id])
-  edits MatchCommEdit[]
+  edits      MatchCommEdit[]
+  match      Match           @relation(fields: [match_id], references: [id])
+  user       User            @relation(fields: [user_id], references: [id])
 
   @@map("league_match_comms")
 }
 
 model MatchCommEdit {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   comm_id    Int
   user_id    Int
   content    String
-  created_at DateTime @default(now())
-
-  comm MatchComm @relation(fields: [comm_id], references: [id])
-  user User      @relation(fields: [user_id], references: [id])
+  created_at DateTime  @default(now())
+  comm       MatchComm @relation(fields: [comm_id], references: [id])
+  user       User      @relation(fields: [user_id], references: [id])
 
   @@map("league_match_comm_edits")
 }
@@ -319,39 +259,36 @@ model MatchPickBan {
   id         Int      @id @default(autoincrement())
   match_id   Int
   map_id     Int
-  team       String   // 'home' or 'away'
-  action     String   // 'pick' or 'ban'
+  team       String
+  action     String
   order      Int
   created_at DateTime @default(now())
-
-  match Match @relation(fields: [match_id], references: [id])
-  map   Map   @relation(fields: [map_id], references: [id])
+  map        Map      @relation(fields: [map_id], references: [id])
+  match      Match    @relation(fields: [match_id], references: [id])
 
   @@map("league_match_pick_bans")
 }
 
 model Map {
-  id      Int    @id @default(autoincrement())
-  game_id Int?
-  name    String
-
-  game      Game?          @relation(fields: [game_id], references: [id])
+  id        Int            @id @default(autoincrement())
+  name      String
+  game_id   Int?
   pick_bans MatchPickBan[]
+  game      Game?          @relation(fields: [game_id], references: [id])
 
   @@map("maps")
 }
 
 model UserNameChange {
-  id            Int      @id @default(autoincrement())
-  user_id       Int
-  name          String
+  id             Int      @id @default(autoincrement())
+  user_id        Int
+  name           String
   approved_by_id Int?
   denied_by_id   Int?
-  created_at    DateTime @default(now())
-
-  user        User  @relation(fields: [user_id], references: [id])
-  approved_by User? @relation("ApprovedBy", fields: [approved_by_id], references: [id])
-  denied_by   User? @relation("DeniedBy", fields: [denied_by_id], references: [id])
+  created_at     DateTime @default(now())
+  approved_by    User?    @relation("ApprovedBy", fields: [approved_by_id], references: [id])
+  denied_by      User?    @relation("DeniedBy", fields: [denied_by_id], references: [id])
+  user           User     @relation(fields: [user_id], references: [id])
 
   @@map("user_name_changes")
 }
@@ -361,20 +298,18 @@ model UserLog {
   user_id    Int
   message    String
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("user_logs")
 }
 
 model APIKey {
-  id      Int     @id @default(autoincrement())
-  user_id Int?
-  name    String?
-  key     String  @unique
+  id         Int      @id @default(autoincrement())
+  user_id    Int?
+  name       String?
+  key        String   @unique
   created_at DateTime @default(now())
-
-  user User? @relation(fields: [user_id], references: [id])
+  user       User?    @relation(fields: [user_id], references: [id])
 
   @@map("api_keys")
 }
@@ -384,8 +319,7 @@ model UserComment {
   user_id    Int
   content    String
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("user_comments")
 }
@@ -395,8 +329,7 @@ model UserTitle {
   user_id    Int
   name       String
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("user_titles")
 }
@@ -407,317 +340,131 @@ model Notification {
   message    String
   read       Boolean  @default(false)
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("notifications")
 }
 
 model ForumsTopic {
-  id                     Int     @id @default(autoincrement())
-  created_by_id          Int
-  name                   String
-  created_at             DateTime @default(now())
-  updated_at             DateTime @updatedAt
-  locked                 Boolean?
-  pinned                 Boolean?
-  hidden                 Boolean?
-  isolated               Boolean?
-  default_hidden         Boolean?
-  ancestry_depth         Int      @default(0)
-  ancestry               String?
-  visible_threads_count  Int      @default(0)
-  default_locked         Boolean  @default(false)
-  isolated_by_id         Int?
-  description            String   @default("")
-  description_render_cache String @default("")
-
-  created_by               User                           @relation(fields: [created_by_id], references: [id])
-  isolated_by              User?                          @relation("IsolatedBy", fields: [isolated_by_id], references: [id])
-  threads                  ForumsThread[]
-  subscriptions            ForumsTopicSubscription[]
-  action_manage_permissions ActionUserManageForumsTopic[]
-  topic_bans               ActionUserUseForumsTopicBan[]
+  id                  Int                       @id @default(autoincrement())
+  locked              Boolean                   @default(false)
+  pinned              Boolean                   @default(false)
+  created_at          DateTime                  @default(now())
+  updated_at          DateTime                  @updatedAt
+  created_by_id       Int
+  default_hidden      Boolean                   @default(false)
+  default_locked      Boolean                   @default(false)
+  depth               Int                       @default(0)
+  description         String?
+  hidden              Boolean                   @default(false)
+  isolated            Boolean                   @default(false)
+  name                String
+  parent_id           Int?
+  threads             ForumsThread[]
+  subscriptions       ForumsTopicSubscription[]
+  created_by          User                      @relation(fields: [created_by_id], references: [id])
+  forums_topics       ForumsTopic?              @relation("forums_topicsToforums_topics", fields: [parent_id], references: [id])
+  other_forums_topics ForumsTopic[]             @relation("forums_topicsToforums_topics")
 
   @@map("forums_topics")
 }
 
 model ForumsThread {
-  id            Int      @id @default(autoincrement())
+  id            Int                        @id @default(autoincrement())
   topic_id      Int?
   created_by_id Int
   title         String
-  locked        Boolean?
-  pinned        Boolean?
-  hidden        Boolean?
-  depth         Int      @default(0)
-  posts_count   Int      @default(0)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  topic                    ForumsTopic?                    @relation(fields: [topic_id], references: [id])
-  created_by               User                            @relation(fields: [created_by_id], references: [id])
-  posts                    ForumsPost[]
-  subscriptions            ForumsThreadSubscription[]
-  action_manage_permissions ActionUserManageForumsThread[]
-  thread_bans              ActionUserUseForumsThreadBan[]
+  locked        Boolean                    @default(false)
+  pinned        Boolean                    @default(false)
+  hidden        Boolean                    @default(false)
+  depth         Int                        @default(0)
+  posts_count   Int                        @default(0)
+  created_at    DateTime                   @default(now())
+  updated_at    DateTime                   @updatedAt
+  posts         ForumsPost[]
+  subscriptions ForumsThreadSubscription[]
+  created_by    User                       @relation(fields: [created_by_id], references: [id])
+  topic         ForumsTopic?               @relation(fields: [topic_id], references: [id])
 
   @@map("forums_threads")
 }
 
 model ForumsPost {
-  id            Int      @id @default(autoincrement())
-  thread_id     Int
-  created_by_id Int
+  id            Int              @id @default(autoincrement())
   content       String
-  edits_count   Int      @default(0)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  thread     ForumsThread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
-  created_by User         @relation(fields: [created_by_id], references: [id])
-  edits      ForumsPostEdit[]
+  created_at    DateTime         @default(now())
+  updated_at    DateTime         @updatedAt
+  created_by_id Int
+  edits_count   Int              @default(0)
+  thread_id     Int
+  edits         ForumsPostEdit[]
+  created_by    User             @relation(fields: [created_by_id], references: [id])
+  thread        ForumsThread     @relation(fields: [thread_id], references: [id], onDelete: Cascade)
 
   @@map("forums_posts")
 }
 
 model ForumsPostEdit {
-  id            Int      @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   post_id       Int
   created_by_id Int
   content       String
-  created_at    DateTime @default(now())
-
-  post       ForumsPost @relation(fields: [post_id], references: [id], onDelete: Cascade)
-  created_by User       @relation(fields: [created_by_id], references: [id])
+  created_at    DateTime   @default(now())
+  created_by    User       @relation(fields: [created_by_id], references: [id])
+  post          ForumsPost @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@map("forums_post_edits")
 }
 
 model ForumsTopicSubscription {
-  id       Int @id @default(autoincrement())
-  topic_id Int
-  user_id  Int
-  created_at DateTime @default(now())
-
-  topic ForumsTopic @relation(fields: [topic_id], references: [id], onDelete: Cascade)
-  user  User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id         Int         @id @default(autoincrement())
+  topic_id   Int
+  user_id    Int
+  created_at DateTime    @default(now())
+  topic      ForumsTopic @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  user       User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([topic_id, user_id])
   @@map("forums_topic_subscriptions")
 }
 
 model ForumsThreadSubscription {
-  id        Int @id @default(autoincrement())
-  thread_id Int
-  user_id   Int
-  created_at DateTime @default(now())
-
-  thread ForumsThread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
-  user   User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id         Int          @id @default(autoincrement())
+  thread_id  Int
+  user_id    Int
+  created_at DateTime     @default(now())
+  thread     ForumsThread @relation(fields: [thread_id], references: [id], onDelete: Cascade)
+  user       User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([thread_id, user_id])
   @@map("forums_thread_subscriptions")
 }
 
-// Action/Permission Models (matching old Citadel)
-model ActionUserEditGame {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_edit_games")
+model UserBanHistory {
+  id                                         Int       @id @default(autoincrement())
+  user_id                                    Int
+  banned_by_id                               Int
+  ban_reason                                 String?
+  banned_at                                  DateTime  @default(now())
+  banned_until                               DateTime?
+  unbanned_at                                DateTime?
+  unbanned_by_id                             Int?
+  unban_reason                               String?
+  is_active                                  Boolean   @default(true)
+  created_at                                 DateTime  @default(now())
+  updated_at                                 DateTime
+  users_UserBanHistory_banned_by_idTousers   User      @relation("UserBanHistory_banned_by_idTousers", fields: [banned_by_id], references: [id], onDelete: Cascade)
+  users_UserBanHistory_unbanned_by_idTousers User?     @relation("UserBanHistory_unbanned_by_idTousers", fields: [unbanned_by_id], references: [id])
+  users_UserBanHistory_user_idTousers        User      @relation("UserBanHistory_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-model ActionUserEditLeague {
-  id        Int @id @default(autoincrement())
-  user_id   Int
-  league_id Int
-  
-  user   User   @relation(fields: [user_id], references: [id])
-  league League @relation(fields: [league_id], references: [id])
-  
-  @@map("action_user_edit_league")
-}
-
-model ActionUserEditLeagues {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_edit_leagues")
-}
-
-model ActionUserEditPermission {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_edit_permissions")
-}
-
-model ActionUserEditTeam {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  team_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
-  
-  @@map("action_user_edit_team")
-}
-
-model ActionUserEditTeams {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_edit_teams")
-}
-
-model ActionUserEditUser {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_edit_users")
-}
-
-model ActionUserManageForum {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_manage_forums")
-}
-
-model ActionUserManageForumsThread {
-  id               Int @id @default(autoincrement())
-  user_id          Int
-  forums_thread_id Int
-  
-  user   User          @relation(fields: [user_id], references: [id])
-  thread ForumsThread  @relation(fields: [forums_thread_id], references: [id])
-  
-  @@map("action_user_manage_forums_thread")
-}
-
-model ActionUserManageForumsTopic {
-  id              Int @id @default(autoincrement())
-  user_id         Int
-  forums_topic_id Int
-  
-  user  User        @relation(fields: [user_id], references: [id])
-  topic ForumsTopic @relation(fields: [forums_topic_id], references: [id])
-  
-  @@map("action_user_manage_forums_topic")
-}
-
-model ActionUserManageRostersLeague {
-  id        Int @id @default(autoincrement())
-  user_id   Int
-  league_id Int
-  
-  user   User   @relation(fields: [user_id], references: [id])
-  league League @relation(fields: [league_id], references: [id])
-  
-  @@map("action_user_manage_rosters_league")
-}
-
-model ActionUserManageRostersLeagues {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_manage_rosters_leagues")
-}
-
-// Ban Models (matching old Citadel's area-specific bans)
-model ActionUserUseForumsBan {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  reason       String    @default("")
-  terminated_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_use_forums_bans")
-}
-
-model ActionUserUseForumsThreadBan {
-  id               Int       @id @default(autoincrement())
-  user_id          Int
-  forums_thread_id Int
-  reason           String    @default("")
-  terminated_at    DateTime?
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-  
-  user   User         @relation(fields: [user_id], references: [id])
-  thread ForumsThread @relation(fields: [forums_thread_id], references: [id])
-  
-  @@map("action_user_use_forums_thread_bans")
-}
-
-model ActionUserUseForumsTopicBan {
-  id              Int       @id @default(autoincrement())
-  user_id         Int
-  forums_topic_id Int
-  reason          String    @default("")
-  terminated_at   DateTime?
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
-  
-  user  User        @relation(fields: [user_id], references: [id])
-  topic ForumsTopic @relation(fields: [forums_topic_id], references: [id])
-  
-  @@map("action_user_use_forums_topic_bans")
-}
-
-model ActionUserUseLeaguesBan {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  reason       String    @default("")
-  terminated_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_use_leagues_bans")
-}
-
-model ActionUserUseTeamsBan {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  reason       String    @default("")
-  terminated_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_use_teams_bans")
-}
-
-model ActionUserUseUsersBan {
-  id           Int       @id @default(autoincrement())
-  user_id      Int
-  reason       String    @default("")
-  terminated_at DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
-  
-  user User @relation(fields: [user_id], references: [id])
-  
-  @@map("action_user_use_users_bans")
+model user_admin_notes {
+  id                                     Int      @id @default(autoincrement())
+  user_id                                Int
+  admin_id                               Int
+  note                                   String
+  created_at                             DateTime @default(now())
+  updated_at                             DateTime
+  users_user_admin_notes_admin_idTousers User     @relation("user_admin_notes_admin_idTousers", fields: [admin_id], references: [id], onDelete: Cascade)
+  users_user_admin_notes_user_idTousers  User     @relation("user_admin_notes_user_idTousers", fields: [user_id], references: [id], onDelete: Cascade)
 }
